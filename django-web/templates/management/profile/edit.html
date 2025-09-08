@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Perfil - APG PACKING{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Editar Perfil</h1>
+                <p class="text-gray-600 mt-2">Actualiza tu información personal y avatar</p>
+            </div>
+            <a href="{% url 'management:view_profile' %}" 
+               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                <i class="fas fa-eye mr-2"></i>Ver Perfil
+            </a>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="space-y-8" x-data="profileEditor()">
+        {% csrf_token %}
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Avatar Section -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Foto de Perfil</h3>
+                    
+                    <!-- Avatar Display -->
+                    <div class="flex flex-col items-center">
+                        <div class="relative mb-4">
+                            <div class="w-32 h-32 rounded-full overflow-hidden bg-gray-100 border-4 border-white shadow-lg">
+                                <template x-if="avatarPreview">
+                                    <img :src="avatarPreview" alt="Avatar" class="w-full h-full object-cover">
+                                </template>
+                                <template x-if="!avatarPreview">
+                                    {% if profile.avatar_url %}
+                                    <img src="{{ profile.avatar_url }}" alt="Avatar" class="w-full h-full object-cover">
+                                    {% else %}
+                                    <div class="w-full h-full flex items-center justify-center bg-primary-100 text-primary-600 text-2xl font-bold">
+                                        {{ profile.initials }}
+                                    </div>
+                                    {% endif %}
+                                </template>
+                            </div>
+                            
+                            <!-- Upload Button Overlay -->
+                            <label for="avatar-upload" 
+                                   class="absolute bottom-0 right-0 w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center text-white cursor-pointer hover:bg-primary-700 transition-colors shadow-lg">
+                                <i class="fas fa-camera text-sm"></i>
+                            </label>
+                            <input type="file" 
+                                   id="avatar-upload" 
+                                   name="avatar" 
+                                   accept="image/*" 
+                                   class="hidden"
+                                   @change="handleAvatarChange($event)">
+                        </div>
+                        
+                        <!-- Avatar Info -->
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 mb-2">Haz clic en la cámara para cambiar</p>
+                            <p class="text-xs text-gray-500">
+                                JPG, PNG, GIF o WebP<br>
+                                Máximo 5MB<br>
+                                Se redimensionará a 300x300px
+                            </p>
+                        </div>
+                        
+                        <!-- Remove Avatar Button -->
+                        {% if profile.avatar_url %}
+                        <button type="button" 
+                                @click="removeAvatar()"
+                                class="mt-3 text-sm text-red-600 hover:text-red-700">
+                            <i class="fas fa-trash mr-1"></i>Quitar foto
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Form Section -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-6">Información Personal</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Name -->
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                                Nombre <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" 
+                                   id="name" 
+                                   name="name" 
+                                   value="{{ profile.name }}" 
+                                   required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                        
+                        <!-- Surname -->
+                        <div>
+                            <label for="surname" class="block text-sm font-medium text-gray-700 mb-2">
+                                Apellido <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" 
+                                   id="surname" 
+                                   name="surname" 
+                                   value="{{ profile.surname }}" 
+                                   required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                        
+                        <!-- Phone -->
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                                Teléfono
+                            </label>
+                            <input type="tel" 
+                                   id="phone" 
+                                   name="phone" 
+                                   value="{{ profile.phone|default:'' }}" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                        
+                        <!-- Email (readonly) -->
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                                Email
+                            </label>
+                            <input type="email" 
+                                   id="email" 
+                                   value="{{ profile.user.email }}" 
+                                   readonly
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 text-gray-500">
+                            <p class="text-xs text-gray-500 mt-1">Para cambiar el email, contacta al administrador</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Company and Role Info (readonly) -->
+                    <div class="mt-6 pt-6 border-t border-gray-200">
+                        <h4 class="text-md font-medium text-gray-900 mb-4">Información Corporativa</h4>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Company -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Compañía</label>
+                                <div class="flex items-center p-3 bg-gray-50 rounded-md">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-building text-blue-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">{{ profile.company.description }}</p>
+                                        <p class="text-xs text-gray-500">{{ profile.company.category.description }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Role -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Rol</label>
+                                <div class="flex items-center p-3 bg-gray-50 rounded-md">
+                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-user-tag text-green-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">{{ profile.role.description|default:"Sin rol asignado" }}</p>
+                                        <p class="text-xs text-gray-500">
+                                            {% if profile.verified %}
+                                                <i class="fas fa-check-circle text-green-500"></i> Verificado
+                                            {% else %}
+                                                <i class="fas fa-clock text-orange-500"></i> Pendiente verificación
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p class="text-xs text-gray-500 mt-3">
+                            Para cambios en compañía o rol, contacta al administrador
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+            <a href="{% url 'management:dashboard' %}" 
+               class="px-6 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                Cancelar
+            </a>
+            <button type="submit" 
+                    class="px-6 py-2 bg-primary-600 text-white text-sm font-medium rounded-md shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                <i class="fas fa-save mr-2"></i>Guardar Cambios
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function profileEditor() {
+    return {
+        avatarPreview: null,
+        
+        handleAvatarChange(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Validar tamaño
+            if (file.size > 5 * 1024 * 1024) {
+                showProfileNotification('La imagen es muy grande. Máximo 5MB.', 'error');
+                event.target.value = '';
+                return;
+            }
+            
+            // Validar formato
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                showProfileNotification('Formato no válido. Usa JPG, PNG, GIF o WebP.', 'error');
+                event.target.value = '';
+                return;
+            }
+            
+            // Crear preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.avatarPreview = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        },
+        
+        removeAvatar() {
+            if (confirm('¿Estás seguro de que quieres quitar tu foto de perfil?')) {
+                this.avatarPreview = null;
+                document.getElementById('avatar-upload').value = '';
+                
+                // Aquí podrías hacer una llamada AJAX para quitar el avatar del servidor
+                // Por ahora, simplemente limpiamos la preview
+                showProfileNotification('Foto removida. Guarda los cambios para confirmar.', 'info');
+            }
+        }
+    }
+}
+
+// Función auxiliar para mostrar notificaciones (usa el sistema global)
+function showProfileNotification(message, type = 'info') {
+    // Usar la función global del sistema
+    if (typeof showNotification === 'function') {
+        showNotification(message, type);
+    } else {
+        // Fallback si la función global no está disponible
+        console.log(`${type.toUpperCase()}: ${message}`);
+        alert(message);
+    }
+}
+</script>
+{% endblock %}

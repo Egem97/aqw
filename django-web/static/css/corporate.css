@@ -1,0 +1,311 @@
+/* 
+APG PACKING - Corporate Styles
+Custom CSS for corporate branding and enhancements
+*/
+
+:root {
+    --apg-primary: #2563eb;
+    --apg-primary-dark: #1d4ed8;
+    --apg-secondary: #1e293b;
+    --apg-secondary-dark: #0f172a;
+    --apg-accent: #3b82f6;
+    --apg-success: #22c55e;
+    --apg-warning: #f59e0b;
+    --apg-danger: #ef4444;
+    --apg-gray-50: #f8fafc;
+    --apg-gray-100: #f1f5f9;
+    --apg-gray-900: #0f172a;
+}
+
+/* Corporate Gradients */
+.apg-gradient-primary {
+    background: linear-gradient(135deg, var(--apg-primary) 0%, var(--apg-primary-dark) 100%);
+}
+
+.apg-gradient-secondary {
+    background: linear-gradient(135deg, var(--apg-secondary) 0%, var(--apg-secondary-dark) 100%);
+}
+
+.apg-gradient-hero {
+    background: linear-gradient(135deg, var(--apg-secondary) 0%, var(--apg-secondary-dark) 50%, var(--apg-primary) 100%);
+}
+
+/* Login Page Enhancements */
+.login-background {
+    background: var(--apg-secondary);
+    background-image: 
+        radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
+        linear-gradient(135deg, var(--apg-secondary) 0%, var(--apg-secondary-dark) 100%);
+}
+
+.login-card {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.login-input {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px solid #e2e8f0;
+}
+
+.login-input:focus {
+    border-color: var(--apg-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    transform: translateY(-1px);
+}
+
+.login-button {
+    background: linear-gradient(135deg, var(--apg-primary) 0%, var(--apg-primary-dark) 100%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px -3px rgba(37, 99, 235, 0.4);
+}
+
+.login-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.5);
+}
+
+.login-button:active {
+    transform: translateY(0);
+}
+
+/* Corporate Logo Styles */
+.apg-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--apg-primary) 0%, var(--apg-accent) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.3);
+}
+
+.apg-logo-large {
+    width: 80px;
+    height: 80px;
+}
+
+/* Background Images Support */
+.login-bg-image {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+.login-bg-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(30, 41, 59, 0.8);
+    z-index: 1;
+}
+
+.login-bg-image > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* Floating Elements */
+.floating-element {
+    animation: float 6s ease-in-out infinite;
+}
+
+.floating-element:nth-child(2) {
+    animation-delay: 2s;
+}
+
+.floating-element:nth-child(3) {
+    animation-delay: 4s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+/* Loading States */
+.loading-overlay {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(5px);
+}
+
+.loading-spinner {
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top: 3px solid var(--apg-primary);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Dashboard Enhancements */
+.stat-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Table Enhancements */
+.apg-table {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.apg-table th {
+    background: var(--apg-gray-50);
+    color: var(--apg-gray-900);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.75rem;
+}
+
+.apg-table tr:hover {
+    background: var(--apg-gray-50);
+}
+
+/* Button Variants */
+.btn-apg-primary {
+    background: var(--apg-primary);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-apg-primary:hover {
+    background: var(--apg-primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.3);
+}
+
+.btn-apg-secondary {
+    background: var(--apg-gray-100);
+    color: var(--apg-gray-900);
+    border: 1px solid var(--apg-gray-100);
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-apg-secondary:hover {
+    background: white;
+    border-color: var(--apg-primary);
+    color: var(--apg-primary);
+}
+
+/* Status Badges */
+.badge-success {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--apg-success);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.badge-warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--apg-warning);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.badge-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--apg-danger);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.badge-primary {
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--apg-primary);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+}
+
+/* Responsive Image Handling */
+.responsive-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.corporate-logo {
+    max-height: 60px;
+    width: auto;
+}
+
+/* Print Styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .print-friendly {
+        background: white !important;
+        color: black !important;
+        box-shadow: none !important;
+    }
+}
+
+/* Dark mode support (future enhancement) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --apg-bg: var(--apg-gray-900);
+        --apg-text: var(--apg-gray-100);
+    }
+}
+
+/* Animation utilities */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-up {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}

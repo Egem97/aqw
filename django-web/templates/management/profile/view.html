@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Perfil - APG PACKING{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Mi Perfil</h1>
+                <p class="text-gray-600 mt-2">Información personal y corporativa</p>
+            </div>
+            <a href="{% url 'management:edit_profile' %}" 
+               class="inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-md shadow-sm hover:bg-primary-700">
+                <i class="fas fa-edit mr-2"></i>Editar Perfil
+            </a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Profile Card -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
+                <!-- Avatar -->
+                <div class="mb-4">
+                    <div class="w-32 h-32 rounded-full overflow-hidden bg-gray-100 mx-auto border-4 border-white shadow-lg">
+                        {% if profile.avatar_url %}
+                        <img src="{{ profile.avatar_url }}" alt="Avatar" class="w-full h-full object-cover">
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center bg-primary-100 text-primary-600 text-4xl font-bold">
+                            {{ profile.initials }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Basic Info -->
+                <h2 class="text-xl font-bold text-gray-900">{{ profile.name }} {{ profile.surname }}</h2>
+                <p class="text-gray-600 mt-1">{{ profile.user.email }}</p>
+                
+                <!-- Verification Status -->
+                <div class="mt-4">
+                    {% if profile.verified %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                        <i class="fas fa-check-circle mr-2"></i>Verificado
+                    </span>
+                    {% elif profile.requested_verified %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
+                        <i class="fas fa-clock mr-2"></i>Pendiente Verificación
+                    </span>
+                    {% else %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                        <i class="fas fa-user mr-2"></i>Sin Verificar
+                    </span>
+                    {% endif %}
+                </div>
+                
+                <!-- Contact Info -->
+                {% if profile.phone %}
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <div class="flex items-center justify-center text-gray-600">
+                        <i class="fas fa-phone mr-2"></i>
+                        <span>{{ profile.phone }}</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Details Section -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Corporate Information -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-6">Información Corporativa</h3>
+                
+                <!-- Company -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Compañía</label>
+                    <div class="flex items-start p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-building text-blue-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-900">{{ profile.company.description }}</h4>
+                            <p class="text-sm text-gray-600 mt-1">{{ profile.company.category.description }}</p>
+                            <div class="flex items-center mt-2 text-sm text-gray-500">
+                                <span class="mr-4">
+                                    <i class="fas fa-id-card mr-1"></i>RUC: {{ profile.company.ruc }}
+                                </span>
+                                {% if profile.company.phone %}
+                                <span>
+                                    <i class="fas fa-phone mr-1"></i>{{ profile.company.phone }}
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Role -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Rol</label>
+                    <div class="flex items-center p-4 bg-green-50 rounded-lg border border-green-200">
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-user-tag text-green-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">{{ profile.role.description|default:"Sin rol asignado" }}</h4>
+                            <p class="text-sm text-gray-600 mt-1">
+                                {% if profile.role %}
+                                    Rol corporativo activo
+                                {% else %}
+                                    Contacta al administrador para asignar un rol
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Connection Type -->
+                {% if profile.company.type_con %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Tipo de Conexión</label>
+                    <div class="flex items-center p-4 bg-purple-50 rounded-lg border border-purple-200">
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-plug text-purple-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">{{ profile.company.get_type_con_display }}</h4>
+                            <p class="text-sm text-gray-600 mt-1">
+                                {% if profile.company.type_con == 'Api' %}
+                                    Conexión vía API REST
+                                {% else %}
+                                    Conexión directa a SQL Server
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Account Information -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-6">Información de Cuenta</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Username -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Usuario</label>
+                        <p class="text-gray-900 font-medium">{{ profile.user.username }}</p>
+                    </div>
+                    
+                    <!-- Member Since -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Miembro desde</label>
+                        <p class="text-gray-900 font-medium">{{ profile.create|date:"d/m/Y" }}</p>
+                    </div>
+                    
+                    <!-- Last Update -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Última actualización</label>
+                        <p class="text-gray-900 font-medium">{{ profile.modified|date:"d/m/Y H:i" }}</p>
+                    </div>
+                    
+                    <!-- Status -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Estado</label>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <i class="fas fa-circle mr-1 text-xs"></i>Activo
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-6">Acciones Rápidas</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <a href="{% url 'management:edit_profile' %}" 
+                       class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-edit text-blue-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-900">Editar Perfil</h4>
+                            <p class="text-sm text-gray-600">Actualizar información personal</p>
+                        </div>
+                    </a>
+                    
+                    <a href="{% url 'management:dashboard' %}" 
+                       class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-tachometer-alt text-green-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-900">Dashboard</h4>
+                            <p class="text-sm text-gray-600">Ir al panel principal</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

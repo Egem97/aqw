@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Corporativo - APG PACKING{% endblock %}
+
+{% block content %}
+<div data-page="dashboard">{# Marker for JavaScript #}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Dashboard Corporativo</h1>
+                <p class="text-gray-600 mt-2">Panel de control y gestión empresarial</p>
+                {% if user_profile %}
+                <p class="text-sm text-gray-500 mt-1">
+                    Bienvenido, {{ user_profile.name }} {{ user_profile.surname }}
+                    {% if user_profile.company %} - {{ user_profile.company.description }}{% endif %}
+                    {% if user_profile.role %} ({{ user_profile.role.description }}){% endif %}
+                </p>
+                {% endif %}
+            </div>
+            {% if user_profile and not user_profile.verified %}
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div class="flex">
+                    <i class="fas fa-exclamation-triangle text-yellow-400 mr-2 mt-0.5"></i>
+                    <div>
+                        <h3 class="text-sm font-medium text-yellow-800">Perfil no verificado</h3>
+                        <p class="text-xs text-yellow-700 mt-1">Contacta al administrador para verificar tu perfil</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 fade-in" x-data="dashboardStats()">
+        <!-- Total Companies -->
+        <div class="stat-card p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-building text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="ml-4 flex-1">
+                    <p class="text-sm font-medium text-gray-600">Total Compañías</p>
+                    <p class="text-2xl font-bold text-gray-900" x-text="stats.total_companies || '{{ stats.total_companies|default:0 }}'" data-stat="total_companies"></p>
+                    <p class="text-xs text-blue-600">
+                        <i class="fas fa-chart-line"></i> Empresas registradas
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Total Users -->
+        <div class="stat-card p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-users text-green-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="ml-4 flex-1">
+                    <p class="text-sm font-medium text-gray-600">Total Usuarios</p>
+                    <p class="text-2xl font-bold text-gray-900" x-text="stats.total_users || '{{ stats.total_users|default:0 }}'" data-stat="total_users"></p>
+                    <p class="text-xs text-green-600">
+                        <i class="fas fa-user-plus"></i> Perfiles activos
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Verified Users -->
+        <div class="stat-card p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-user-check text-purple-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="ml-4 flex-1">
+                    <p class="text-sm font-medium text-gray-600">Usuarios Verificados</p>
+                    <p class="text-2xl font-bold text-gray-900" x-text="stats.verified_users || '{{ stats.verified_users|default:0 }}'" data-stat="verified_users"></p>
+                    <p class="text-xs text-purple-600">
+                        <i class="fas fa-shield-check"></i> Verificados
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pending Verifications -->
+        <div class="stat-card p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-clock text-orange-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="ml-4 flex-1">
+                    <p class="text-sm font-medium text-gray-600">Verificaciones Pendientes</p>
+                    <p class="text-2xl font-bold text-gray-900" x-text="stats.pending_verifications || '{{ stats.pending_verifications|default:0 }}'" data-stat="pending_verifications"></p>
+                    <p class="text-xs text-orange-600">
+                        <i class="fas fa-hourglass-half"></i> Requiere atención
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Recent Companies -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900">Compañías Recientes</h3>
+                        <a href="{% url 'management:companies_list' %}" class="text-primary-600 hover:text-primary-700 text-sm font-medium">
+                            Ver todas <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="overflow-hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Compañía</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Conexión</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for company in recent_companies %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">{{ company.description }}</div>
+                                    <div class="text-sm text-gray-500">RUC: {{ company.ruc }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ company.category.description|default:"Sin categoría" }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+                                        {% if company.type_con == 'Api' %}bg-blue-100 text-blue-800
+                                        {% else %}bg-green-100 text-green-800{% endif %}">
+                                        {{ company.get_type_con_display }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ company.create|date:"d/m/Y" }}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                                    <i class="fas fa-building text-2xl mb-2"></i>
+                                    <p>No hay compañías registradas</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions & Recent Profiles -->
+        <div class="space-y-8">
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Acciones Rápidas</h3>
+                <div class="space-y-3">
+                    <a href="{% url 'management:companies_list' %}" 
+                       class="flex items-center p-3 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-building text-blue-600"></i>
+                        </div>
+                        <span>Gestionar Compañías</span>
+                        <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
+                    </a>
+                    <a href="{% url 'management:profiles_list' %}" 
+                       class="flex items-center p-3 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-users text-green-600"></i>
+                        </div>
+                        <span>Gestionar Perfiles</span>
+                        <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
+                    </a>
+                    <a href="{% url 'management:verification_requests' %}" 
+                       class="flex items-center p-3 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-user-check text-orange-600"></i>
+                        </div>
+                        <span>Verificaciones</span>
+                        {% if stats.pending_verifications > 0 %}
+                        <span class="ml-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full">{{ stats.pending_verifications }}</span>
+                        {% endif %}
+                        <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
+                    </a>
+                    <a href="{% url 'management:reports' %}" 
+                       class="flex items-center p-3 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-chart-bar text-purple-600"></i>
+                        </div>
+                        <span>Ver Reportes</span>
+                        <i class="fas fa-chevron-right ml-auto text-gray-400"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Category Stats -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Categorías Principales</h3>
+                <div class="space-y-3">
+                    {% for category in category_stats %}
+                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-tag text-blue-600 text-sm"></i>
+                            </div>
+                            <span class="text-sm font-medium text-gray-900">{{ category.description }}</span>
+                        </div>
+                        <span class="text-sm font-bold text-blue-600">{{ category.company_count }}</span>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-gray-500 py-4">
+                        <i class="fas fa-tags text-2xl mb-2"></i>
+                        <p class="text-sm">No hay categorías registradas</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Role Stats -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Roles Principales</h3>
+                <div class="space-y-3">
+                    {% for role in role_stats %}
+                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-user-tag text-green-600 text-sm"></i>
+                            </div>
+                            <span class="text-sm font-medium text-gray-900">{{ role.description }}</span>
+                        </div>
+                        <span class="text-sm font-bold text-green-600">{{ role.count }}</span>
+                    </div>
+                    {% empty %}
+                    <div class="text-center text-gray-500 py-4">
+                        <i class="fas fa-user-cog text-2xl mb-2"></i>
+                        <p class="text-sm">No hay roles registrados</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div> {# Close data-page div #}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function dashboardStats() {
+    return {
+        stats: {
+            total_companies: {{ stats.total_companies|default:0 }},
+            total_users: {{ stats.total_users|default:0 }},
+            verified_users: {{ stats.verified_users|default:0 }},
+            pending_verifications: {{ stats.pending_verifications|default:0 }}
+        },
+        
+        async refreshStats() {
+            try {
+                const response = await fetch('{% url "management:api_dashboard_stats" %}', defaultFetchOptions);
+                const result = await response.json();
+                
+                if (result.success) {
+                    this.stats = result.data;
+                }
+            } catch (error) {
+                console.error('Error refreshing stats:', error);
+            }
+        },
+        
+        init() {
+            // Refresh stats every 30 seconds
+            setInterval(() => {
+                this.refreshStats();
+            }, 30000);
+        }
+    }
+}
+</script>
+{% endblock %}
