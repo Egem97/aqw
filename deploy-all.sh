@@ -8,7 +8,7 @@ set -e
 
 # Configuración
 VPS_IP="34.136.15.241"
-VPS_USER="root"
+VPS_USER="egemfelipe"  # Cambiar por tu usuario real
 VPS_PATH="/opt/alza-api"
 LOCAL_PROJECT_PATH="."
 
