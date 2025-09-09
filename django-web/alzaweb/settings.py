@@ -124,14 +124,18 @@ STATICFILES_FINDERS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Static files serving in development
-if DEBUG:
-    import os
-    # Ensure static directories exist
-    os.makedirs(BASE_DIR / 'static' / 'images' / 'login', exist_ok=True)
-    os.makedirs(BASE_DIR / 'static' / 'images' / 'logo', exist_ok=True)
-    os.makedirs(BASE_DIR / 'static' / 'css', exist_ok=True)
-    os.makedirs(BASE_DIR / 'static' / 'js', exist_ok=True)
+# Static files serving configuration
+import os
+# Ensure static directories exist
+os.makedirs(BASE_DIR / 'static' / 'images' / 'login', exist_ok=True)
+os.makedirs(BASE_DIR / 'static' / 'images' / 'logo', exist_ok=True)
+os.makedirs(BASE_DIR / 'static' / 'css', exist_ok=True)
+os.makedirs(BASE_DIR / 'static' / 'js', exist_ok=True)
+
+# Security settings for production
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = False  # Let Nginx handle SSL redirect
+USE_TZ = True
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
