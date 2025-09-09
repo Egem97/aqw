@@ -20,8 +20,8 @@ services:
       - REDIS_URL=${REDIS_URL:-redis://redis:6379}
       - DB_MIN_CONNECTIONS=${DB_MIN_CONNECTIONS:-10}
       - DB_MAX_CONNECTIONS=${DB_MAX_CONNECTIONS:-20}
-    expose:
-      - "5544"
+    ports:
+      - "5544:5544"
     networks:
       - app-network
     healthcheck:
@@ -50,8 +50,8 @@ services:
       - REDIS_URL=${REDIS_URL:-redis://redis:6379}
       - API_BASE_URL=${API_BASE_URL:-http://api:5544}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-34.136.15.241,localhost,127.0.0.1}
-    expose:
-      - "8880"
+    ports:
+      - "8880:8880"
     networks:
       - app-network
     depends_on:
