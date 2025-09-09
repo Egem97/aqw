@@ -32,8 +32,16 @@ USER root
 RUN mkdir -p /app/static /app/staticfiles /app/media && \
     chown -R appuser:appuser /app/static /app/staticfiles /app/media
 
+# Generar archivos estáticos
+RUN python manage.py collectstatic --noinput
+
 # Exponer puerto
 EXPOSE 8880
 
+# Script de inicio que ejecuta collectstatic y luego gunicorn
+COPY docker-entrypoint.sh /app/
+RUN chmod +x /app/docker-entrypoint.sh && \
+    chown appuser:appuser /app/docker-entrypoint.sh
+
 # Comando de inicio
-CMD ["gunicorn", "--bind", "0.0.0.0:8880", "--workers", "3", "alzaweb.wsgi:application"]
+CMD ["/app/docker-entrypoint.sh"]
