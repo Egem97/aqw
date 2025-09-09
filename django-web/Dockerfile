@@ -26,10 +26,11 @@ COPY . .
 # Crear usuario no-root
 RUN adduser --disabled-password --gecos '' appuser && \
     chown -R appuser:appuser /app
-USER appuser
+USER root
 
-# Crear directorios para static y media
-RUN mkdir -p /app/static /app/media
+# Crear directorios para static y media (incluye STATIC_ROOT)
+RUN mkdir -p /app/static /app/staticfiles /app/media && \
+    chown -R appuser:appuser /app/static /app/staticfiles /app/media
 
 # Exponer puerto
 EXPOSE 8880
