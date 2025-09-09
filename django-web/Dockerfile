@@ -32,9 +32,6 @@ USER root
 RUN mkdir -p /app/static /app/staticfiles /app/media && \
     chown -R appuser:appuser /app/static /app/staticfiles /app/media
 
-# Generar archivos estáticos
-RUN python manage.py collectstatic --noinput
-
 # Exponer puerto
 EXPOSE 8880
 
