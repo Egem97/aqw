@@ -60,7 +60,6 @@ services:
       api:
         condition: service_healthy
     volumes:
-      - django_static:/app/staticfiles
       - django_media:/app/media
       - ./logs/django:/app/logs
 
@@ -93,7 +92,6 @@ services:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
       - ./logs/nginx:/var/log/nginx
-      - django_static:/var/www/static
       - django_media:/var/www/media
     networks:
       - app-network
@@ -118,7 +116,6 @@ services:
 
 volumes:
   redis_data:
-  django_static:
   django_media:
   certbot_conf:
   certbot_www:
