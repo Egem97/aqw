@@ -32,7 +32,7 @@ USER appuser
 RUN mkdir -p /app/static /app/media
 
 # Exponer puerto
-EXPOSE 8000
+EXPOSE 8880
 
 # Comando de inicio
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "alzaweb.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8880", "--workers", "3", "alzaweb.wsgi:application"]
